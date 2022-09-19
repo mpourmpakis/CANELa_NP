@@ -1,4 +1,4 @@
-# README - Tutorial for the Python Package developed for Demystifying the Chemical Ordering of Multimetallic Nanoparticles by Dennis Loevlie, Brenno Ferreira, and Giannis Mpourmpakis*
+# Tutorial for the Python Package developed for Demystifying the Chemical Ordering of Multimetallic Nanoparticles by Dennis Loevlie, Brenno Ferreira, and Giannis Mpourmpakis*
 
 
 ```python
@@ -15,13 +15,13 @@ atoms = ac.Icosahedron('Au',5)
 
 
 ```python
-atoms
+print(atoms)
 ```
 
 
 
 
-    Atoms(symbols='Au309', pbc=False, tags=...)
+    >>> Atoms(symbols='Au309', pbc=False, tags=...)
 
 
 
@@ -32,13 +32,13 @@ atoms.symbols[100:] = 'Pd'
 
 
 ```python
-atoms
+print(atoms)
 ```
 
 
 
 
-    Atoms(symbols='Au100Pd209', pbc=False, tags=...)
+    >>> Atoms(symbols='Au100Pd209', pbc=False, tags=...)
 
 
 
@@ -108,7 +108,7 @@ Viewing the full NP
 NP.view()
 ```
 
-![png](README_Notebook_files/full_np_.png)
+![png](README_Notebook_files/full_np.png)
 
 
 Viewing a slice of the NP (in the x-direction)
@@ -118,7 +118,7 @@ Viewing a slice of the NP (in the x-direction)
 NP.view(cut=True)
 ```
 
-![png](README_Notebook_files/half_np_.png)
+![png](README_Notebook_files/half_np.png)
 
 ## Working with your own xyz files
 
