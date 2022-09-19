@@ -156,4 +156,10 @@ NP.core_shell_plot()
     
 ![png](README_Notebook_files/README_Notebook_23_0.png)
     
+<h1 align="center">Generating New Gamma Values</h1>
 
+If you would like to generate gamma values for metal combinations that have not been done yet please follow the following steps from the publication Demystifying the Chemical Ordering of Multimetallic Nanoparticles by Dennis Loevlie, Brenno Ferreira, and Giannis Mpourmpakis*.  
+
+1. Generate equally distributed NP xyz files using the script: [generate_nps](CANELa_NP/Setup_NPs_for_DFT.py)
+2. Geometrically optimize these structures to find the most stable energy.  
+3. Use this [script](CANELa_NP/Gamma_Value_Calc.py) with the optimized energy values and previously generated structures to calculate the new gamma values (they will be stored in "CANELa_NP/Data/np_gammas.json")
