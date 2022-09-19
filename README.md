@@ -3,14 +3,25 @@
 Python Package developed for Demystifying the Chemical Ordering of Multimetallic Nanoparticles by Dennis Loevlie, Brenno Ferreira, and Giannis Mpourmpakis*
 
 -------
-# Importing packages
+# Installation 
+
+```
+git clone https://github.com/mpourmpakis/CANELa_NP.git
+cd CANELA_NP
+pip install -e .
+```
+
+<h1 align="center">Package Tutorial (demonstration of use)</h1>
+
+
+## Importing packages
 
 ```python
 from CANELa_NP.Nanotools import Nanoparticle
 import ase.cluster as ac
 ```
 
-# Creating a bimetallic NP with ASE 
+## Creating a bimetallic NP with ASE 
 
 
 ```python
@@ -46,7 +57,7 @@ print(atoms)
 
 
 
-# Initializing the NP Object
+## Initializing the NP Object
 
 
 ```python
@@ -66,7 +77,7 @@ NP.core_shell_plot()
     
 
 
-# Optimizing the chemical ordering
+## Optimizing the chemical ordering
 
 
 ```python
@@ -90,7 +101,7 @@ NP.run_ga(max_gens=-1,max_nochange=1_000)
     Done!
 
 
-# Visualizing the core/shell distribution of the optimized chemical ordering
+## Visualizing the core/shell distribution of the optimized chemical ordering
 
 
 ```python
