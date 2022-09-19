@@ -1,5 +1,9 @@
-# Tutorial for the Python Package developed for Demystifying the Chemical Ordering of Multimetallic Nanoparticles by Dennis Loevlie, Brenno Ferreira, and Giannis Mpourmpakis*
+<h1 align="center">CANELa_NP</h1>
 
+Python Package developed for Demystifying the Chemical Ordering of Multimetallic Nanoparticles by Dennis Loevlie, Brenno Ferreira, and Giannis Mpourmpakis*
+
+-------
+# Importing packages
 
 ```python
 from CANELa_NP.Nanotools import Nanoparticle
