@@ -136,6 +136,7 @@ class Nanoparticle:
             self.atoms = read(structure)
         else:
             self.atoms = structure
+        
         self.cn_method = method # Coordination number method
         self.x = x # Scaling factor for the cutoffs
         self.describe = describe # Description of the nanoparticle
@@ -144,6 +145,7 @@ class Nanoparticle:
         self.composition = get_comps(self.atoms,self.unique_metals)
         self.bcm = make_bcm(self.atoms,x=x,CN_Method=method)
         self.bcm_int = BCModel(self.atoms,CN_Method='int')
+        self.atom_cut = self.x_cut(self.atoms)
         self.shells,self.comps,self.totals = self.core_shell_info()
         self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1]
         # make custom colors dataframe with Au as color gold, Pd as tab:blue, and Pt as silver
@@ -240,7 +242,7 @@ class Nanoparticle:
             view (ASE): ASE view object
         """
         if cut:
-            view(self.x_cut(self.atoms))
+            view(self.atoms_cut)
         else:
             view(self.atoms)
         

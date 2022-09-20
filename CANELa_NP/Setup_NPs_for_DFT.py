@@ -94,7 +94,7 @@ if __name__ == "__main__":
     Atom_Type_2 = args.Atom_Type_2
     number_of_shells = args.number_of_shells
 
-    # CALCULATIONS
+    ############################################### CALCULATIONS ####################################################
 
     # Create the directory for the NPs
     Dir_Exist_Or_Create(f'Data')
