@@ -108,6 +108,7 @@ def get_comps(atoms,unique_metals):
 
     Args:
         atoms (ase.Atoms): atoms object
+        unique_metals (list): list of unique metals in the atoms object
     
     Returns:
         comps (dict): composition of the atoms object

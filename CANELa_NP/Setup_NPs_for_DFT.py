@@ -86,52 +86,55 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generates a set of NPs for gamma values')
     parser.add_argument('Atom_Type_1', type=str, help='The first atom type')
     parser.add_argument('Atom_Type_2', type=str, help='The second atom type')
-    # make number of shells default to 4
     parser.add_argument('-n', '--number_of_shells', type=int, default=4, help='The number of shells to use default=4')
-
+    
+    # Collect the arguments
     args = parser.parse_args()
     Atom_Type_1 = args.Atom_Type_1
     Atom_Type_2 = args.Atom_Type_2
     number_of_shells = args.number_of_shells
 
     # CALCULATIONS
+
+    # Create the directory for the NPs
     Dir_Exist_Or_Create(f'Data')
     os.chdir('Data')
     folder_name = Atom_Type_2+Atom_Type_1
     Dir_Exist_Or_Create(folder_name)
 
+    # Create a nanoparticle with the first atom type
     atoms = ac.Icosahedron(Atom_Type_1, number_of_shells)
 
-    # Writing it to a file
-    # atoms.write(os.path.join(folder_name,Atom_Type_1+str(len(atoms))+'.xyz'))
-
-
+    # Get the coordination numbers
     CNs, Bonds = get_coordination_numbers(atoms)
-    Unique_CNs = np.unique(CNs) # For icosahedron morphology
-
+    # Find the unique coordination numbers
+    Unique_CNs = np.unique(CNs) 
+    # Distribute the second atom type evenly across the coordination environment
     for CN in Unique_CNs:
         atoms = evenly_distribute(atoms,CNs,CN,Atom_Type_2)
 
     ## Write to a file
-
     file_name_1 = Atom_Type_1+str(len(atoms[atoms.symbols==Atom_Type_1]))+Atom_Type_2+str(len(atoms[atoms.symbols==Atom_Type_2]))+'.xyz'
-    atoms.set_initial_charges(CNs)
+    atoms.set_initial_charges(CNs) # to visualize the coordination numbers
     atoms.write(os.path.join(folder_name,file_name_1))
 
     # Now we just swap the orderings
 
+    # Finding the indices of the first atom type
     indices_Atom_Type_1 = [i for i,x in enumerate(atoms.symbols) if x==Atom_Type_1]
-
+    # Finding the indices of the second atom type
     indices_Atom_Type_2 = [i for i,x in enumerate(atoms.symbols) if x==Atom_Type_2]
-
+    
+    # copy the atoms object
     atoms2 = atoms.copy()
 
+    # swap the atom types
     for i,x in enumerate(indices_Atom_Type_1):
         atoms2[x].symbol = Atom_Type_2
-            
     for i,x in enumerate(indices_Atom_Type_2):
         atoms2[x].symbol = Atom_Type_1
+    
     # Saving the second file
-    atoms2.set_initial_charges(CNs)
+    atoms2.set_initial_charges(CNs) # to visualize the coordination numbers
     file_name_2 = Atom_Type_1+str(len(atoms2[atoms2.symbols==Atom_Type_1]))+Atom_Type_2+str(len(atoms2[atoms2.symbols==Atom_Type_2]))+'.xyz'
     atoms2.write(os.path.join(folder_name,file_name_2))
