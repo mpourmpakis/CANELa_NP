@@ -93,8 +93,6 @@ def make_bcm(atoms,x=1.200,CN_Method = 'frac'):
     return bcm
 
 def Generate_GA(bcm,COMPS,x=1.20,describe="none",method='frac'):
-    # bcm = make_bcm(atoms,x=x,CN_Method=method)
-
     # Updating the gamma dictionary with the new gamma values (if new gamma values are available)
     old_gammas = bcm.gammas
     new_gammas = recursive_update(old_gammas,gammas_np)
@@ -168,7 +166,6 @@ class Nanoparticle:
         totals = []
         comps = defaultdict(list)
         bcm_int = self.bcm_int
-        #bcm_int = BCModel(self.atoms,CN_Method='int')
         for i in range(len(bcm_int.shell_map)):
             if i == 0:
                 continue
@@ -189,8 +186,6 @@ class Nanoparticle:
         return  shells,comps,totals
 
     def Generate_GA(self,bcm,COMPS,x=1.20,describe="none",method='frac'):
-        #bcm = make_bcm(atoms,x=x,CN_Method=method)
-
         # Updating the gamma dictionary with the new gamma values (if new gamma values are available)
         old_gammas = bcm.gammas
         new_gammas = recursive_update(old_gammas,gammas_np)
@@ -204,8 +199,6 @@ class Nanoparticle:
     
     def x_cut(self,original_atoms):
         atoms = original_atoms.copy()
-
-        # bcm = BCModel(atoms, metal_types=np.unique(atoms.symbols))
         core_atom = atoms[self.bcm_int.shell_map[0]][0]
         cutoff = core_atom.a # x coordinate of atom in the core
         atoms_to_del = np.where(atoms.get_positions()[:,0]>cutoff)[0] # Finding all the atom idxs that have a x coord greater than the centers
@@ -236,6 +229,14 @@ class Nanoparticle:
 
     def view(self,cut=False):
         """View the atoms object
+
+        Args:
+            cut (bool, optional): Whether to slice the atoms object.  
+            If true a slice of the atoms object in the x-direction will be made before visualizing the structure. 
+            Defaults to False.
+
+        Returns:
+            view (ASE): ASE view object
         """
         if cut:
             view(self.x_cut(self.atoms))
@@ -244,7 +245,16 @@ class Nanoparticle:
         
 
     def core_shell_plot(self,save=False,saveas='NP_Comp',dpi=300):
-        """Plotting core/shell composition on a bar plot"""
+        """Plotting core/shell composition on a bar plot
+        
+        Args:
+            save (bool, optional): Whether to save the plot. Defaults to False.
+            saveas (str, optional): Name of the file to save the plot as. Defaults to 'NP_Comp'.
+            dpi (int, optional): DPI of the saved plot. Defaults to 300.
+            
+        Returns:
+            fig (matplotlib): matplotlib figure object
+        """
         
         f, ax = plt.subplots(1, 1, sharey=False)
         ax2 = ax.twiny()
@@ -252,7 +262,6 @@ class Nanoparticle:
         for i, key in enumerate(list(self.comps.keys())):
             value = self.comps[key]
             element_color = "#" + self.df_colors[self.df_colors['Element']==key]['Hexadecimal Web Color'].values[0]
-            # element_color = self.df_colors[self.df_colors['Element']==key]['Hexadecimal Web Color']
             ax.bar(self.shells,value,width=1,bottom=bottom,color= element_color,linewidth=1,edgecolor='black')
             bottom += np.array(value)
         
