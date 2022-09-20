@@ -5,6 +5,13 @@ Python Package developed for Demystifying the Chemical Ordering of Multimetallic
 -------
 # Installation 
 
+
+First you will need to install the original GA repo at https://github.com/mpourmpakis/ce_expansion.  You can install it via pip with:
+```
+pip install git+https://github.com/mpourmpakis/ce_expansion.git
+```
+You can then install and work with the code from this repo with the following command:
+
 ```
 git clone https://github.com/mpourmpakis/CANELa_NP.git
 cd CANELA_NP
