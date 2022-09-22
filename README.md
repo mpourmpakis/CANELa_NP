@@ -121,26 +121,23 @@ NP.core_shell_plot()
     
 
 
-## Visualizing the NP with ase gui
+## Visualizing the NP (with ase gui and molgif)
 
 Viewing the full NP
 
-
-```python
-NP.view()
-```
-
-![png](README_Notebook_files/full_np.png)
+|`NP.view()` | `molgif(NP.atoms,add_legend=True)` |
+| ------------- | ------------- |
+| ![png](README_Notebook_files/full_np.png)  | ![gif](README_Notebook_files/Au100Pd209.gif)  |
 
 
 Viewing a slice of the NP (in the x-direction)
 
 
-```python
-NP.view(cut=True)
-```
+|`NP.view(cut=True)` | `molgif(NP.atom_cut,add_legend=True)` |
+| ------------- | ------------- |
+| ![png](README_Notebook_files/half_np.png)  | ![png](README_Notebook_files/timize-2.gif)  |
 
-![png](README_Notebook_files/half_np.png)
+
 
 ## Working with your own xyz files
 
