@@ -1,19 +1,21 @@
 from ce_expansion.atomgraph.bcm import BCModel
 from ce_expansion.atomgraph.adjacency import build_bonds_arr
 from ce_expansion.ga.ga import GA
+
 import ase.cluster as ac
 from ase.io import read
 from ase.visualize import view
+
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
+
 import sys
 import os
-import ast
 from collections import defaultdict
-import numpy as np
+import collections.abc 
 import argparse
 import json
-import collections.abc 
 
 gamma_folder_name = os.path.join(os.path.dirname(__file__), "Data")
 gamma_values_path = os.path.join(gamma_folder_name, "np_gammas.json")
@@ -77,7 +79,7 @@ def get_cutoffs(atoms,x):
     return [radii[atom_type] for atom_type in atoms.symbols]
 
 def make_bcm(atoms,x=1.200,CN_Method = 'frac'):
-    """Make a BCModel object
+    """Make a BCModel object.  The BCModel object is helpful for calculating the CE of the atoms object as well as to calculate the coordination numbers of the atoms object and finding the shell numbers.  
 
     Args:
         atoms (ase.Atoms): atoms object
@@ -91,17 +93,6 @@ def make_bcm(atoms,x=1.200,CN_Method = 'frac'):
     bonds = build_bonds_arr(atoms,radii)
     bcm = BCModel(atoms,bond_list=bonds,CN_Method=CN_Method)
     return bcm
-
-def Generate_GA(bcm,COMPS,x=1.20,describe="none",method='frac'):
-    # Updating the gamma dictionary with the new gamma values (if new gamma values are available)
-    old_gammas = bcm.gammas
-    new_gammas = recursive_update(old_gammas,gammas_np)
-    bcm.gammas = new_gammas
-    ce_bulk_old = bcm.ce_bulk
-    ce_bulk_new = recursive_update(ce_bulk_old,ce_bulk_pbe_d3)
-    bcm.ce_bulk = ce_bulk_new
-    bcm._get_precomps()
-    return GA(bcm,COMPS,describe)
 
 def get_comps(atoms,unique_metals):
     """Get the composition of the atoms object
@@ -118,12 +109,9 @@ def get_comps(atoms,unique_metals):
         COMPS.append(sum(atoms.symbols==j))
     return COMPS
 
-
-
-
 class Nanoparticle:
     def __init__(self,structure,x=1.20,describe="none",method='frac'):
-        """Initialize the Nanoparticle object
+        """Initialize the Nanoparticle object.  This is a wrapper for the BCModel object and the GA object.  The BCModel object is helpful for calculating the CE of the atoms object as well as to calculate the coordination numbers of the atoms object and finding the shell numbers.  The GA object is helpful for finding the optimal chemical ordering of the atoms object using the BCModel.
 
         Args:
             structure (str): path to the xyz file or the atoms object
@@ -147,11 +135,8 @@ class Nanoparticle:
         self.bcm_int = BCModel(self.atoms,CN_Method='int')
         self.atom_cut = self.x_cut(self.atoms)
         self.shells,self.comps,self.totals = self.core_shell_info()
-        self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1]
-        # make custom colors dataframe with Au as color gold, Pd as tab:blue, and Pt as silver
-        # self.df_colors = pd.DataFrame({'Element':['Au','Pd','Pt'],'Hexadecimal Web Color':['gold','tab:blue','silver']})
-        
-        self.GA_init = self.Generate_GA(self.bcm,self.composition,x=1.20,describe="none",method='frac')
+        self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
+        self.GA_init = self.Generate_GA(self.bcm,self.composition,x=x,describe=describe,method=method)
     
     def __len__(self):
         return len(self.atoms)
@@ -193,7 +178,6 @@ class Nanoparticle:
         old_gammas = bcm.gammas
         new_gammas = recursive_update(old_gammas,gammas_np)
         bcm.gammas = new_gammas
-        
         ce_bulk_old = bcm.ce_bulk
         ce_bulk_new = recursive_update(ce_bulk_old,ce_bulk_pbe_d3)
         bcm.ce_bulk = ce_bulk_new
@@ -209,7 +193,8 @@ class Nanoparticle:
         return atoms
 
     def run_ga(self,max_gens=-1,max_nochange=2000):
-        """Run the GA
+        """Run the GA to find the optimal chemical ordering.  This function will run the GA until the max number of generations is reached 
+            or the max number of generations without a change in the best fitness is reached.
 
         Args:
             COMPS (dict): dictionary of compositions
@@ -246,7 +231,15 @@ class Nanoparticle:
         else:
             view(self.atoms)
         
+    def write(self,filename):
+        """Write the atoms object to a file
 
+        Args:
+            filename (str): path to the file
+        """
+        self.atoms.write(filename)
+
+    
     def core_shell_plot(self,save=False,saveas='NP_Comp',dpi=300):
         """Plotting core/shell composition on a bar plot
         
@@ -287,5 +280,3 @@ class Nanoparticle:
         if save:
             plt.savefig(f'{saveas}.png',dpi=dpi,bbox_inches='tight')
         plt.show()
-
-    
