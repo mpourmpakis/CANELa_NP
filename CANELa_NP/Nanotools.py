@@ -1,6 +1,7 @@
 from ce_expansion.atomgraph.bcm import BCModel
 from ce_expansion.atomgraph.adjacency import build_bonds_arr
 from ce_expansion.ga.ga import GA
+from ce_expansion.ga.ga import Nanoparticle as NP_GA
 
 import ase.cluster as ac
 from ase.io import read
@@ -110,7 +111,7 @@ def get_comps(atoms,unique_metals):
     return COMPS
 
 class Nanoparticle:
-    def __init__(self,structure,x=1.20,describe="none",method='frac'):
+    def __init__(self,structure,x=1.20,describe="none",method='frac',spike=False):
         """Initialize the Nanoparticle object.  This is a wrapper for the BCModel object and the GA object.  The BCModel object is helpful for calculating the CE of the atoms object as well as to calculate the coordination numbers of the atoms object and finding the shell numbers.  The GA object is helpful for finding the optimal chemical ordering of the atoms object using the BCModel.
 
         Args:
@@ -118,6 +119,7 @@ class Nanoparticle:
             x (float, optional): scaling factor for the cutoffs. Defaults to 1.200.
             describe (str, optional): description of the nanoparticle. Defaults to "none".
             method (str, optional): Method for calculating coordination number. Defaults to 'frac'.
+            spike (bool, optional): Whether or not to spike the GA initial generation with the current NP ordering. Defaults to False.
         """
         # If the xyz file is a string, then read the file, if it is an atoms object, then just use it
         if isinstance(structure,str):
@@ -136,7 +138,13 @@ class Nanoparticle:
         self.atom_cut = self.x_cut(self.atoms)
         self.shells,self.comps,self.totals = self.core_shell_info()
         self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
+            
         self.GA_init = self.Generate_GA(self.bcm,self.composition,x=x,describe=describe,method=method)
+        if spike:
+            self.NP_spike = NP_GA(self.bcm,self.composition,get_ordering(self.atoms))
+            self.GA_init.pop[0] = self.NP_spike
+            self.GA_init.sort_pop()
+        
     
     def __len__(self):
         return len(self.atoms)
@@ -239,6 +247,16 @@ class Nanoparticle:
         """
         self.atoms.write(filename)
 
+    def calc_ce(self):
+        """Calculate the cohesive energy of the nanoparticle
+
+        Returns:
+            ce (float): cohesive energy of the nanoparticle
+        """
+        ce = self.bcm.calc_ce(get_ordering(self.atoms))
+        return ce
+    
+    
     
     def core_shell_plot(self,save=False,saveas='NP_Comp',dpi=300):
         """Plotting core/shell composition on a bar plot
