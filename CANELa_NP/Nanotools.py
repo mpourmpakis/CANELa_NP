@@ -93,6 +93,14 @@ def make_bcm(atoms,x=1.200,CN_Method = 'frac'):
     radii = get_cutoffs(atoms,x)
     bonds = build_bonds_arr(atoms,radii)
     bcm = BCModel(atoms,bond_list=bonds,CN_Method=CN_Method)
+    # Updating the gamma dictionary with the new gamma values (if new gamma values are available)
+    old_gammas = bcm.gammas
+    new_gammas = recursive_update(old_gammas,gammas_np)
+    bcm.gammas = new_gammas
+    ce_bulk_old = bcm.ce_bulk
+    ce_bulk_new = recursive_update(ce_bulk_old,ce_bulk_pbe_d3)
+    bcm.ce_bulk = ce_bulk_new
+    bcm._get_precomps()
     return bcm
 
 def get_comps(atoms,unique_metals):
@@ -182,14 +190,6 @@ class Nanoparticle:
         return  shells,comps,totals
 
     def Generate_GA(self,bcm,COMPS,x=1.20,describe="none",method='frac'):
-        # Updating the gamma dictionary with the new gamma values (if new gamma values are available)
-        old_gammas = bcm.gammas
-        new_gammas = recursive_update(old_gammas,gammas_np)
-        bcm.gammas = new_gammas
-        ce_bulk_old = bcm.ce_bulk
-        ce_bulk_new = recursive_update(ce_bulk_old,ce_bulk_pbe_d3)
-        bcm.ce_bulk = ce_bulk_new
-        bcm._get_precomps()
         return GA(bcm,COMPS,describe)
     
     def x_cut(self,original_atoms):
