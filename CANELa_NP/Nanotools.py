@@ -24,7 +24,7 @@ gamma_values_path = os.path.join(gamma_folder_name, "np_gammas.json")
 with open(gamma_values_path) as f:
     gammas_np = json.load(f)
 
-ce_bulk_pbe_d3 = {'Au':-3.64,'Pd':-4.20,'Pt':-6.20} # eV/atom
+ce_bulk_pbe_d3 = {'Au':-3.64,'Pd':-4.20,'Pt':-6.20,"Ag":-2.96,"Cu":-3.95,"Ni":-5.11,"Ir":-7.95} # eV/atom PBE-D3 SOURCE: https://aip.scitation.org/doi/suppl/10.1063/1.4948636/suppl_file/supplementary_material.pdf
 
 def recursive_update(d: dict, u: dict) -> dict:
     """

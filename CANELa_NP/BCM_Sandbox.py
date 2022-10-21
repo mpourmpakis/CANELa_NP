@@ -43,7 +43,10 @@ class BCM_Mod:
     def __init__(self,atoms,gammas=False,ce_bulk=False,x=1.200):
         self.atoms = atoms # ASE Atoms object
 
-        self.bcm = make_bcm(atoms,x) # Build the BCM from original code
+        # self.bcm = make_bcm(atoms,x) # Build the BCM from original code
+        
+        # Updating the code for the atom types other than Au, Pd, Pt
+        self.bcm = BCModel(atoms,CN_Method='int') # Build the BCM from original code
         
         if not gammas:
             self.gammas = self.bcm.gammas # BCM gammas
