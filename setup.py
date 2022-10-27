@@ -27,4 +27,5 @@ setuptools.setup(name='CANELa_NP',
                                    'ase>=3.17.0',
                                    'seaborn',
                                    'pandas',
-                                  'lxml'])
+                                  'lxml',
+                                  'git+https://github.com/mpourmpakis/ce_expansion.git'])
