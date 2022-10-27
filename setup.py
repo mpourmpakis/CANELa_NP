@@ -11,7 +11,7 @@ with open('README.md', 'r') as readme:
 setuptools.setup(name='CANELa_NP',
                  version=__version__,
                  author='Dennis Loevlie',
-                 url='https://github.com/loevlie/cp2k_helper',
+                 url='https://github.com/mpourmpakis/CANELa_NP',
                  description="A wrapper over the previously made GA package to find the optimal gamma values for a given NP and optimize the chemical ordering",
                  long_description=description,
                  long_description_content_type='text/markdown',
@@ -20,12 +20,12 @@ setuptools.setup(name='CANELa_NP',
                         'console_scripts': [
                             'cp2k_helper = cp2k_helper.__main__:main'
                         ]},
-                 python_requires='>=3.5',
+                 python_requires='>=3.9',
+                 extras_require={'all': ["mpourmpakis @ git+https://github.com/mpourmpakis/ce_expansion.git"]},
                  install_requires=['matplotlib',
                                    'numpy>=1.17.2',
                                    'pillow',
                                    'ase>=3.17.0',
                                    'seaborn',
                                    'pandas',
-                                  'lxml',
-                                  'git+https://github.com/mpourmpakis/ce_expansion.git'])
+                                  'lxml'])
