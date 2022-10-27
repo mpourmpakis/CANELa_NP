@@ -26,4 +26,5 @@ setuptools.setup(name='CANELa_NP',
                                    'pillow',
                                    'ase>=3.17.0',
                                    'seaborn',
-                                   'pandas'])
+                                   'pandas',
+                                  'lxml'])
