@@ -73,6 +73,7 @@ def get_cutoffs(atoms,x):
              'Pd':1.38*x,
              'Pt':1.38*x}
 
+    # If we have not implemented the radii for the metal in the atoms object, we will use the covalent radii
     df = pd.read_html('http://crystalmaker.com/support/tutorials/atomic-radii/index.html',header=0)[0]
     for element in np.unique(atoms.symbols):
         if element not in radii.keys():
@@ -235,7 +236,7 @@ class Nanoparticle:
             view (ASE): ASE view object
         """
         if cut:
-            view(self.atoms_cut)
+            view(self.atom_cut)
         else:
             view(self.atoms)
         
