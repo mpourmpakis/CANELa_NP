@@ -77,7 +77,7 @@ def get_cutoffs(atoms,x):
     df = pd.read_html('http://crystalmaker.com/support/tutorials/atomic-radii/index.html',header=0)[0]
     for element in np.unique(atoms.symbols):
         if element not in radii.keys():
-            radii[element] = float(df[df['ElementSymbol']==element]['CovalentRadius [Å]'].values[0])*x
+            radii[element] = float(df[df['Element Symbol']==element]['Covalent Radius [Å]'].values[0])*x
     return [radii[atom_type] for atom_type in atoms.symbols]
 
 def make_bcm(atoms,x=1.200,CN_Method = 'frac'):
