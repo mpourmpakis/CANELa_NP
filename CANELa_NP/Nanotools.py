@@ -254,7 +254,7 @@ class Nanoparticle:
             
             if os.path.exists(path):
                 os.remove(path)
-            molgif.rot_gif(self.atom_cut,optimize=True,save_path=path,overwrite=True,draw_bonds=True,draw_legend=True);
+            molgif.rot_gif(self.atom_cut,optimize=True,save_path=path,overwrite=True,draw_bonds=False,draw_legend=True);
             plt.clf()
             plt.close()
             display(Image(filename=path))
@@ -264,7 +264,7 @@ class Nanoparticle:
                 
             if os.path.exists(path):
                 os.remove(path)
-            molgif.rot_gif(self.atoms,optimize=True,save_path=path,overwrite=True,draw_bonds=True,draw_legend=True);
+            molgif.rot_gif(self.atoms,optimize=True,save_path=path,overwrite=True,draw_bonds=False,draw_legend=True);
             plt.clf()
             plt.close()
             display(Image(filename=path))
