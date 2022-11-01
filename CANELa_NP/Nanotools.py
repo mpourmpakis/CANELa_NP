@@ -17,6 +17,9 @@ from collections import defaultdict
 import collections.abc 
 import argparse
 import json
+from IPython.display import HTML,display, Image
+import molgif
+
 
 gamma_folder_name = os.path.join(os.path.dirname(__file__), "Data")
 gamma_values_path = os.path.join(gamma_folder_name, "np_gammas.json")
@@ -224,19 +227,44 @@ class Nanoparticle:
         print("Done!")
 
 
-    def view(self,cut=False):
+    def view(self,cut=False,rotate=False,path=None):
         """View the atoms object
 
         Args:
             cut (bool, optional): Whether to slice the atoms object.  
             If true a slice of the atoms object in the x-direction will be made before visualizing the structure. 
             Defaults to False.
+            rotate (bool, optional): Whether to rotate the atoms object with molgif.
+            If true a gif will be created with molgif before visualizing the structure.
+            Defaults to False.
+            path (str, optional): Path to save the gif. Defaults to None.
+
 
         Returns:
             view (ASE): ASE view object
         """
-        if cut:
+        if cut and not rotate:
             view(self.atom_cut)
+        elif cut and rotate:
+            if path is None:
+                path = "atoms_gif.gif"
+            
+            if os.path.exists(path):
+                os.remove(path)
+            molgif.rot_gif(self.atom_cut,optimize=True,save_path=path,overwrite=True,draw_bonds=True,draw_legend=True);
+            plt.clf()
+            plt.close()
+            display(Image(filename=path))
+        elif rotate:
+            if path is None:
+                path = "atoms_full_gif.gif"
+                
+            if os.path.exists(path):
+                os.remove(path)
+            molgif.rot_gif(self.atoms,optimize=True,save_path=path,overwrite=True,draw_bonds=True,draw_legend=True);
+            plt.clf()
+            plt.close()
+            display(Image(filename=path))
         else:
             view(self.atoms)
         
