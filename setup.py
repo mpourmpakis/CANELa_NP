@@ -28,4 +28,5 @@ setuptools.setup(name='CANELa_NP',
                                    'ase>=3.17.0',
                                    'seaborn',
                                    'pandas',
-                                  'lxml'])
+                                  'lxml',
+                                  'molgif'])
