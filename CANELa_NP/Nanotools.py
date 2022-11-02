@@ -86,7 +86,7 @@ def get_cutoffs(atoms,x):
                 radii[element] = float(df[df['Element Symbol']==element]['Covalent Radius [Å]'].values[0])*x
     return [radii[atom_type] for atom_type in atoms.symbols]
 
-def make_bcm(atoms,x=1.200,CN_Method = 'frac'):
+def make_bcm(atoms,x=1.200,CN_Method = 'frac',metal=True):
     """Make a BCModel object.  The BCModel object is helpful for calculating the CE of the atoms object as well as to calculate the coordination numbers of the atoms object and finding the shell numbers.  
 
     Args:
@@ -99,15 +99,16 @@ def make_bcm(atoms,x=1.200,CN_Method = 'frac'):
     """
     radii = get_cutoffs(atoms,x)
     bonds = build_bonds_arr(atoms,radii)
-    bcm = BCModel(atoms,bond_list=bonds,CN_Method=CN_Method)
+    bcm = BCModel(atoms,bond_list=bonds,CN_Method=CN_Method,metal=metal)
     # Updating the gamma dictionary with the new gamma values (if new gamma values are available)
-    old_gammas = bcm.gammas
-    new_gammas = recursive_update(old_gammas,gammas_np)
-    bcm.gammas = new_gammas
-    ce_bulk_old = bcm.ce_bulk
-    ce_bulk_new = recursive_update(ce_bulk_old,ce_bulk_pbe_d3)
-    bcm.ce_bulk = ce_bulk_new
-    bcm._get_precomps()
+    if metal:
+        old_gammas = bcm.gammas
+        new_gammas = recursive_update(old_gammas,gammas_np)
+        bcm.gammas = new_gammas
+        ce_bulk_old = bcm.ce_bulk
+        ce_bulk_new = recursive_update(ce_bulk_old,ce_bulk_pbe_d3)
+        bcm.ce_bulk = ce_bulk_new
+        bcm._get_precomps()
     return bcm
 
 def get_comps(atoms,unique_metals):
@@ -126,7 +127,7 @@ def get_comps(atoms,unique_metals):
     return COMPS
 
 class Nanoparticle:
-    def __init__(self,structure,x=1.20,describe="none",method='frac',spike=False):
+    def __init__(self,structure,x=1.20,describe="none",method='frac',spike=False,metal=True):
         """Initialize the Nanoparticle object.  This is a wrapper for the BCModel object and the GA object.  The BCModel object is helpful for calculating the CE of the atoms object as well as to calculate the coordination numbers of the atoms object and finding the shell numbers.  The GA object is helpful for finding the optimal chemical ordering of the atoms object using the BCModel.
 
         Args:
@@ -142,23 +143,43 @@ class Nanoparticle:
         else:
             self.atoms = structure
         
-        self.cn_method = method # Coordination number method
-        self.x = x # Scaling factor for the cutoffs
-        self.describe = describe # Description of the nanoparticle
-        self.unique_metals = list(np.unique(self.atoms.symbols))
-        self.unique_metals.sort()
-        self.composition = get_comps(self.atoms,self.unique_metals)
-        self.bcm = make_bcm(self.atoms,x=x,CN_Method=method)
-        self.bcm_int = BCModel(self.atoms,CN_Method='int')
-        self.atom_cut = self.x_cut(self.atoms)
-        self.shells,self.comps,self.totals = self.core_shell_info()
-        self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
+        if metal is False:
+            print("WARNING: The package was not designed to calculate the CE of non-metallic nanoparticles.  Most functionality is disabled when metal is set to False.")
+
+
+        if metal:
+
+            self.cn_method = method # Coordination number method
+            self.x = x # Scaling factor for the cutoffs
+            self.describe = describe # Description of the nanoparticle
+            self.unique_metals = list(np.unique(self.atoms.symbols))
+            self.unique_metals.sort()
+            self.composition = get_comps(self.atoms,self.unique_metals)
+            self.bcm = make_bcm(self.atoms,x=x,CN_Method=method)
+            self.bcm_int = BCModel(self.atoms,CN_Method='int')
+            self.atom_cut = self.x_cut(self.atoms)
+            self.shells,self.comps,self.totals = self.core_shell_info()
+            self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
+                
+            self.GA_init = self.Generate_GA(self.bcm,self.composition,x=x,describe=describe,method=method)
+            if spike:
+                self.NP_spike = NP_GA(self.bcm,self.composition,get_ordering(self.atoms))
+                self.GA_init.pop[0] = self.NP_spike
+                self.GA_init.sort_pop()
+        else:
+            self.cn_method = method # Coordination number method
+            self.x = x # Scaling factor for the cutoffs
+            self.describe = describe # Description of the nanoparticle
+            self.unique_metals = list(np.unique(self.atoms.symbols))
+            self.unique_metals.sort()
+            self.composition = get_comps(self.atoms,self.unique_metals)
+            self.bcm = make_bcm(self.atoms,x=x,CN_Method=method,metal=metal)
+            self.bcm_int = BCModel(self.atoms,CN_Method='int',metal=metal)
+            self.atom_cut = self.x_cut(self.atoms)
+            self.shells,self.comps,self.totals = self.core_shell_info()
+            self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
             
-        self.GA_init = self.Generate_GA(self.bcm,self.composition,x=x,describe=describe,method=method)
-        if spike:
-            self.NP_spike = NP_GA(self.bcm,self.composition,get_ordering(self.atoms))
-            self.GA_init.pop[0] = self.NP_spike
-            self.GA_init.sort_pop()
+
         
     
     def __len__(self):
@@ -227,6 +248,7 @@ class Nanoparticle:
         self.atoms = self.ga.make_atoms_object()
         self.bcm = make_bcm(self.atoms,x=self.x,CN_Method=self.cn_method)
         self.shells,self.comps,self.totals = self.core_shell_info()
+        self.atom_cut = self.x_cut(self.atoms)
         print("Done!")
 
 
