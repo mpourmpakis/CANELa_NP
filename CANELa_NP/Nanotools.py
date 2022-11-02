@@ -147,37 +147,24 @@ class Nanoparticle:
             print("WARNING: The package was not designed to calculate the CE of non-metallic nanoparticles.  Most functionality is disabled when metal is set to False.")
 
 
+        self.cn_method = method # Coordination number method
+        self.x = x # Scaling factor for the cutoffs
+        self.describe = describe # Description of the nanoparticle
+        self.unique_metals = list(np.unique(self.atoms.symbols))
+        self.unique_metals.sort()
+        self.composition = get_comps(self.atoms,self.unique_metals)
+        self.bcm = make_bcm(self.atoms,x=x,CN_Method=method,metal=metal)
+        self.bcm_int = BCModel(self.atoms,CN_Method='int',metal=metal)
+        self.atom_cut = self.x_cut(self.atoms)
+        self.shells,self.comps,self.totals = self.core_shell_info()
+        self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
+        
         if metal:
-
-            self.cn_method = method # Coordination number method
-            self.x = x # Scaling factor for the cutoffs
-            self.describe = describe # Description of the nanoparticle
-            self.unique_metals = list(np.unique(self.atoms.symbols))
-            self.unique_metals.sort()
-            self.composition = get_comps(self.atoms,self.unique_metals)
-            self.bcm = make_bcm(self.atoms,x=x,CN_Method=method)
-            self.bcm_int = BCModel(self.atoms,CN_Method='int')
-            self.atom_cut = self.x_cut(self.atoms)
-            self.shells,self.comps,self.totals = self.core_shell_info()
-            self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
-                
             self.GA_init = self.Generate_GA(self.bcm,self.composition,x=x,describe=describe,method=method)
             if spike:
                 self.NP_spike = NP_GA(self.bcm,self.composition,get_ordering(self.atoms))
                 self.GA_init.pop[0] = self.NP_spike
                 self.GA_init.sort_pop()
-        else:
-            self.cn_method = method # Coordination number method
-            self.x = x # Scaling factor for the cutoffs
-            self.describe = describe # Description of the nanoparticle
-            self.unique_metals = list(np.unique(self.atoms.symbols))
-            self.unique_metals.sort()
-            self.composition = get_comps(self.atoms,self.unique_metals)
-            self.bcm = make_bcm(self.atoms,x=x,CN_Method=method,metal=metal)
-            self.bcm_int = BCModel(self.atoms,CN_Method='int',metal=metal)
-            self.atom_cut = self.x_cut(self.atoms)
-            self.shells,self.comps,self.totals = self.core_shell_info()
-            self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
             
 
         
@@ -252,7 +239,7 @@ class Nanoparticle:
         print("Done!")
 
 
-    def view(self,cut=False,rotate=False,path=None):
+    def view(self,cut=False,rotate=False,path=None,colors=None):
         """View the atoms object
 
         Args:
@@ -276,7 +263,7 @@ class Nanoparticle:
             
             if os.path.exists(path):
                 os.remove(path)
-            molgif.rot_gif(self.atom_cut,optimize=True,save_path=path,overwrite=True,draw_bonds=False,draw_legend=True);
+            molgif.rot_gif(self.atom_cut,optimize=True,save_path=path,overwrite=True,draw_bonds=False,draw_legend=True,colors=colors);
             plt.clf()
             plt.close()
             display(Image(filename=path))
@@ -286,7 +273,7 @@ class Nanoparticle:
                 
             if os.path.exists(path):
                 os.remove(path)
-            molgif.rot_gif(self.atoms,optimize=True,save_path=path,overwrite=True,draw_bonds=False,draw_legend=True);
+            molgif.rot_gif(self.atoms,optimize=True,save_path=path,overwrite=True,draw_bonds=False,draw_legend=True,colors=colors);
             plt.clf()
             plt.close()
             display(Image(filename=path))
