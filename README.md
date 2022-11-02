@@ -125,7 +125,7 @@ NP.core_shell_plot()
 
 Viewing the full NP
 
-|`NP.view()` | `molgif(NP.atoms,add_legend=True)` |
+|`NP.view()` | `NP.view(rotate=True)` |
 | ------------- | ------------- |
 | ![png](README_Notebook_files/full_np.png)  | ![gif](README_Notebook_files/Au100Pd209.gif)  |
 
@@ -133,7 +133,7 @@ Viewing the full NP
 Viewing a slice of the NP (in the x-direction)
 
 
-|`NP.view(cut=True)` | `molgif(NP.atom_cut,add_legend=True)` |
+|`NP.view(cut=True)` | `NP.view(cut=True,rotate=True)` |
 | ------------- | ------------- |
 | ![png](README_Notebook_files/half_np.png)  | ![png](README_Notebook_files/timize-2.gif)  |
 
