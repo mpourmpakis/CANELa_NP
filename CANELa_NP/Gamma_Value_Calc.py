@@ -141,7 +141,7 @@ if __name__ == '__main__':
     #  Update gamma dict 
     with open(gamma_values_path) as f:
         gamma_dict = json.load(f)
-        updated_gammas = recursive_update(solution,gamma_dict)
+        updated_gammas = recursive_update(gamma_dict,solution)
 
     # Write the updated gamma dict to the file
     with open(gamma_values_path, 'w') as f:
