@@ -66,7 +66,6 @@ def calc_gammas(atoms,CEs):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Calculate Gamma Values for a given set of CEs')
     # Parse the command line arguments
-    parser = argparse.ArgumentParser(description='Generates a set of NPs for gamma values')
     parser.add_argument('Atom_Type_1', type=str, help='The first atom type')
     parser.add_argument('Atom_Type_2', type=str, help='The second atom type')
     parser.add_argument('-n', '--total_atoms', type=int, default=147, help='The total number of atoms = 147')
@@ -141,7 +140,7 @@ if __name__ == '__main__':
     #  Update gamma dict 
     with open(gamma_values_path) as f:
         gamma_dict = json.load(f)
-        updated_gammas = recursive_update(solution,gamma_dict)
+        updated_gammas = recursive_update(gamma_dict,solution)
 
     # Write the updated gamma dict to the file
     with open(gamma_values_path, 'w') as f:
