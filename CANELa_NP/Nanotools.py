@@ -156,6 +156,7 @@ class Nanoparticle:
         self.bcm = make_bcm(self.atoms,x=x,CN_Method=method,metal=metal)
         self.bcm_int = BCModel(self.atoms,CN_Method='int',metal=metal)
         self.atom_cut = self.x_cut(self.atoms)
+        self.atom_cut_neg = self.x_cut(self.atoms,dir='neg')
         self.shells,self.comps,self.totals = self.core_shell_info()
         self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
         
@@ -207,11 +208,24 @@ class Nanoparticle:
     def Generate_GA(self,bcm,COMPS,x=1.20,describe="none",method='frac'):
         return GA(bcm,COMPS,describe)
     
-    def x_cut(self,original_atoms):
+    def x_cut(self,original_atoms,dir='pos',coordinate='x'):
         atoms = original_atoms.copy()
         core_atom = atoms[self.bcm_int.shell_map[0]][0]
-        cutoff = core_atom.a # x coordinate of atom in the core
-        atoms_to_del = np.where(atoms.get_positions()[:,0]>cutoff)[0] # Finding all the atom idxs that have a x coord greater than the centers
+        if coordinate=='x':
+            coord_idx = 0
+            cutoff = core_atom.a # x coordinate of atom in the core
+        elif coordinate=='y':
+            coord_idx = 1
+            cutoff = core_atom.b # y coordinate of atom in the core
+        elif coordinate=='z':
+            coord_idx = 2
+            cutoff = core_atom.c # z coordinate of atom in the core
+        
+        if dir=='pos': # If we want to delete all the atoms that are greater than the cutoff (i.e. the atoms in the positive direction)
+            atoms_to_del = np.where(atoms.get_positions()[:,coord_idx]>cutoff)[0] # Finding all the atom idxs that have a x coord greater than the centers
+        elif dir=='neg': # If we want to delete all the atoms that are less than the cutoff (i.e. the atoms in the negative direction)
+            atoms_to_del = np.where(atoms.get_positions()[:,coord_idx]<cutoff)[0]
+
         del atoms[atoms_to_del]
         return atoms
 
@@ -239,7 +253,7 @@ class Nanoparticle:
         print("Done!")
 
 
-    def view(self,cut=False,rotate=False,path=None,colors=None):
+    def view(self,cut=False,rotate=False,path=None,colors=None,positive=True):
         """View the atoms object
 
         Args:
@@ -256,14 +270,20 @@ class Nanoparticle:
             view (ASE): ASE view object
         """
         if cut and not rotate:
-            view(self.atom_cut)
+            if positive == True:
+                view(self.atom_cut)
+            else:
+                view(self.atom_cut_neg)
         elif cut and rotate:
             if path is None:
                 path = "atoms_gif.gif"
             
             if os.path.exists(path):
                 os.remove(path)
-            molgif.rot_gif(self.atom_cut,optimize=True,save_path=path,overwrite=True,draw_bonds=False,draw_legend=True,colors=colors);
+            if positive == True:
+                molgif.rot_gif(self.atom_cut,optimize=True,save_path=path,overwrite=True,draw_bonds=False,draw_legend=True,colors=colors);
+            else:
+                molgif.rot_gif(self.atom_cut_neg,optimize=True,save_path=path,overwrite=True,draw_bonds=False,draw_legend=True,colors=colors);
             plt.clf()
             plt.close()
             display(Image(filename=path))

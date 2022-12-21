@@ -61,6 +61,10 @@ def calc_gammas(atoms,CEs):
     print("CEs: ",CEs)
     print("CEs from BCM: ",custom_calc_ce(atoms[0],new_gammas,ce_bulk_pbe_d3),custom_calc_ce(atoms[1],new_gammas,ce_bulk_pbe_d3))
 
+    for i in range(len(CEs)):
+        comp = atoms[i].get_chemical_formula()
+        print(f"{comp} CE: {CEs[i]}")
+
     return new_gammas
 
 if __name__ == '__main__':
