@@ -13,7 +13,7 @@ import numpy as np
 
 import sys
 import os
-from collections import defaultdict
+from collections import defaultdict, Counter
 import collections.abc 
 import argparse
 import json
@@ -127,7 +127,7 @@ def get_comps(atoms,unique_metals):
     return COMPS
 
 class Nanoparticle:
-    def __init__(self,structure,x=1.20,describe="none",method='frac',spike=False,metal=True):
+    def __init__(self,structure,x=1.20,describe="none",method='frac',spike=False,metal=True,cut_coord='x'):
         """Initialize the Nanoparticle object.  This is a wrapper for the BCModel object and the GA object.  The BCModel object is helpful for calculating the CE of the atoms object as well as to calculate the coordination numbers of the atoms object and finding the shell numbers.  The GA object is helpful for finding the optimal chemical ordering of the atoms object using the BCModel.
 
         Args:
@@ -155,8 +155,8 @@ class Nanoparticle:
         self.composition = get_comps(self.atoms,self.unique_metals)
         self.bcm = make_bcm(self.atoms,x=x,CN_Method=method,metal=metal)
         self.bcm_int = BCModel(self.atoms,CN_Method='int',metal=metal)
-        self.atom_cut = self.x_cut(self.atoms)
-        self.atom_cut_neg = self.x_cut(self.atoms,dir='neg')
+        self.atom_cut = self.x_cut(self.atoms,coordinate=cut_coord)
+        self.atom_cut_neg = self.x_cut(self.atoms,dir='neg',coordinate=cut_coord)
         self.shells,self.comps,self.totals = self.core_shell_info()
         self.df_colors = pd.read_html('https://sciencenotes.org/molecule-atom-colors-cpk-colors/',header=0)[1] # Web-scraping the CPK colors for the atoms
         
@@ -317,6 +317,14 @@ class Nanoparticle:
         ce = self.bcm.calc_ce(get_ordering(self.atoms))
         return ce
     
+    def get_diam(self):
+        """Calculate the diameter of the nanoparticle in Angstroms"""
+        #cn_surfaces,surf_atoms = get_surface_atoms(atoms)
+        cns = list(self.bcm_int.cn)
+
+        corner_idx = cns.index(min(Counter(cns)))
+        dist = max(self.atoms.get_all_distances()[corner_idx]) # Ang 
+        return dist
     
     
     def core_shell_plot(self,save=False,saveas='NP_Comp',dpi=300):
