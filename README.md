@@ -169,3 +169,20 @@ If you would like to generate gamma values for metal combinations that have not 
 1. Generate equally distributed NP xyz files using the script: [generate_nps](CANELa_NP/Setup_NPs_for_DFT.py)
 2. Geometrically optimize these structures to find the most stable energy.  
 3. Use this [script](CANELa_NP/Gamma_Value_Calc.py) with the optimized energy values and previously generated structures to calculate the new gamma values (they will be stored in "CANELa_NP/Data/np_gammas.json")
+
+
+<h1 align="center">Citation</h1>
+
+If you find the code useful, please also consider the following BibTeX entry.
+
+```BibTeX
+@article{doi:10.1021/acs.accounts.2c00646,
+author = {Loevlie, Dennis Johan and Ferreira, Brenno and Mpourmpakis, Giannis},
+title = {Demystifying the Chemical Ordering of Multimetallic Nanoparticles},
+journal = {Accounts of Chemical Research},
+volume = {0},
+number = {0},
+pages = {null},
+year = {0},
+doi = {10.1021/acs.accounts.2c00646},
+```
