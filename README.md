@@ -2,6 +2,8 @@
 
 Python Package developed for Demystifying the Chemical Ordering of Multimetallic Nanoparticles by Dennis Loevlie, Brenno Ferreira, and Giannis Mpourmpakis*
 
+Read the publication here:  https://pubs.acs.org/doi/10.1021/acs.accounts.2c00646
+
 ![png](README_Notebook_files/Ternary_Image.png)
 
 -------
