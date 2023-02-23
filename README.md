@@ -182,9 +182,10 @@ If you find the code useful, please also consider the following BibTeX entry.
 author = {Loevlie, Dennis Johan and Ferreira, Brenno and Mpourmpakis, Giannis},
 title = {Demystifying the Chemical Ordering of Multimetallic Nanoparticles},
 journal = {Accounts of Chemical Research},
-volume = {0},
-number = {0},
-pages = {null},
-year = {0},
-doi = {10.1021/acs.accounts.2c00646} }
+volume = {56},
+number = {3},
+pages = {248-257},
+year = {2023},
+doi = {10.1021/acs.accounts.2c00646},
+URL = {https://doi.org/10.1021/acs.accounts.2c00646},
 ```
